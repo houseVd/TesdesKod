@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAITI PLINKO PRO</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plinko Game</title>
 
 <style>
-
 *{
 margin:0;
 padding:0;
@@ -15,245 +14,188 @@ font-family:Arial,sans-serif;
 }
 
 body{
-min-height:100vh;
-overflow:hidden;
+background:#0c1630;
 display:flex;
 justify-content:center;
 align-items:center;
-background:url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop') center/cover;
-}
-
-.overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.45);
-backdrop-filter:blur(5px);
+height:100vh;
+overflow:hidden;
 }
 
 .game{
+width:390px;
+height:844px;
+background:linear-gradient(#0b1f44,#1b0d35);
 position:relative;
-z-index:2;
-width:100%;
-max-width:430px;
-padding:15px;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:15px;
-}
-
-.videoBox{
-width:100%;
-height:160px;
-border-radius:20px;
 overflow:hidden;
-border:3px solid #6ff;
-box-shadow:0 0 20px #0ff;
-position:relative;
-background:#111;
+border-radius:30px;
+border:4px solid #222;
 }
 
-.videoBox img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.videoText{
-position:absolute;
-bottom:10px;
-left:0;
-right:0;
+.top-title{
 text-align:center;
-font-size:18px;
-font-weight:bold;
-color:yellow;
-text-shadow:0 0 10px #000;
-}
-
-.balance{
-width:250px;
-height:70px;
-border-radius:20px;
-background:#111827;
-border:4px solid #5ff;
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:48px;
-font-weight:bold;
 color:white;
-box-shadow:0 0 20px #0ff;
-}
-
-.boardWrap{
-position:relative;
-width:100%;
-display:flex;
-justify-content:center;
+font-size:45px;
+font-weight:bold;
+padding-top:20px;
+font-family:cursive;
 }
 
 canvas{
-background:rgba(25,0,70,.85);
-border-radius:40px;
-box-shadow:
-0 0 25px #00f0ff,
-inset 0 0 20px #0ff;
-}
-
-.flag{
 position:absolute;
-top:130px;
-width:80px;
-height:80px;
-border-radius:50%;
-overflow:hidden;
-border:3px solid #00f0ff;
-box-shadow:0 0 20px #00f0ff;
+top:100px;
+left:0;
 }
 
-.flag img{
+.bottom{
+position:absolute;
+bottom:0;
+left:0;
 width:100%;
-height:100%;
-object-fit:cover;
+background:rgba(56,0,93,.8);
+padding:15px;
 }
 
-.leftFlag{
-left:-5px;
-}
-
-.rightFlag{
-right:-5px;
-}
-
-.controls{
-width:100%;
+.bet-boxes{
 display:flex;
-flex-direction:column;
-gap:15px;
-align-items:center;
+justify-content:center;
+gap:4px;
+margin-bottom:12px;
 }
 
-button{
-width:270px;
-height:75px;
-border:none;
-border-radius:20px;
+.bet{
+padding:8px 10px;
+font-size:12px;
+font-weight:bold;
+border-radius:4px;
+color:#fff;
+}
+
+.green{background:#2dbf32;}
+.yellow{background:#d6d600;color:#111;}
+.blue{background:#00bfff;}
+
+.win-box{
+background:gold;
+color:#111;
+font-size:28px;
+font-weight:bold;
+text-align:center;
+padding:6px;
+border-radius:6px;
+margin-bottom:14px;
+}
+
+.play-btn{
+width:120px;
+height:120px;
+border-radius:50%;
+background:white;
+border:10px solid gold;
+display:flex;
+justify-content:center;
+align-items:center;
+margin:auto;
 font-size:38px;
 font-weight:bold;
+color:#b07b00;
 cursor:pointer;
+box-shadow:0 0 25px gold;
 transition:.2s;
+}
+
+.play-btn:active{
+transform:scale(.9);
+}
+
+.bet-value{
+text-align:center;
 color:white;
-}
-
-button:active{
-transform:scale(.95);
-}
-
-.withdraw{
-background:#12005e;
-box-shadow:0 0 20px #4d7cff;
-}
-
-.play{
-background:linear-gradient(180deg,#00ff4c,#008d00);
-box-shadow:0 0 25px #00ff40;
-}
-
-@media(max-width:450px){
-
-.videoBox{
-height:140px;
-}
-
-.balance{
-width:220px;
-font-size:40px;
-}
-
-button{
-width:240px;
-height:70px;
 font-size:34px;
+font-weight:bold;
+margin-top:15px;
 }
 
+.info{
+display:flex;
+justify-content:space-between;
+margin-top:15px;
+color:white;
+font-size:14px;
 }
 
+.box{
+background:rgba(255,255,255,.1);
+padding:10px;
+border-radius:10px;
+width:48%;
+}
+
+.ball{
+position:absolute;
+width:14px;
+height:14px;
+border-radius:50%;
+background:#ff2ea6;
+box-shadow:0 0 15px #ff2ea6;
+}
 </style>
 </head>
 <body>
 
-<div class="overlay"></div>
-
 <div class="game">
 
-<div class="videoBox">
-<img src="https://i.imgur.com/6RL6R3Y.jpeg">
-<div class="videoText">UNIQUEMENT POUR HAÏTI</div>
+<div class="top-title">Plinky</div>
+
+<canvas id="board" width="390" height="560"></canvas>
+
+<div class="bottom">
+
+<div class="bet-boxes">
+<div class="bet yellow">0.2x</div>
+<div class="bet green">0.5x</div>
+<div class="bet green">1.0x</div>
+<div class="bet blue">5.0x</div>
+<div class="bet green">2.0x</div>
+<div class="bet green">0.5x</div>
+<div class="bet yellow">0.2x</div>
 </div>
 
-<div class="balance" id="money">0 HTG</div>
-
-<div class="boardWrap">
-
-<div class="flag leftFlag">
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Flag_of_Haiti.svg">
+<div class="win-box" id="winText">
+Win 1.00$
 </div>
 
-<canvas id="board" width="400" height="500"></canvas>
-
-<div class="flag rightFlag">
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Flag_of_Haiti.svg">
+<div class="play-btn" id="playBtn">
+PLAY
 </div>
 
+<div class="bet-value">
+Bet 1.00$
 </div>
 
-<div class="controls">
+<div class="info">
+<div class="box">
+🎮 Manual<br>
+⚡ Auto
+</div>
 
-<button class="withdraw">
-RETIRER
-</button>
-
-<button class="play" id="playBtn">
-JOUER
-</button>
+<div class="box">
+💎 Balance<br>
+$1000
+</div>
+</div>
 
 </div>
 
 </div>
 
 <script>
-
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-const moneyText = document.getElementById("money");
-const playBtn = document.getElementById("playBtn");
-
-let balance = 0;
-
 const pegs = [];
 const rows = 10;
-
-const slots = [
-5,5,8,20,100,3,500,3,100,20,8,5,5
-];
-
-const colors = [
-"#ff2d55",
-"#ff2d55",
-"#ff9800",
-"#ffd600",
-"#ff00ff",
-"#ff2d55",
-"#00cfff",
-"#ff2d55",
-"#ff00ff",
-"#ffd600",
-"#ff9800",
-"#ff2d55",
-"#ff2d55"
-];
+const spacing = 32;
 
 for(let row=0; row<rows; row++){
 
@@ -261,179 +203,97 @@ let cols = row + 1;
 
 for(let col=0; col<cols; col++){
 
-let x = canvas.width/2 - row*18 + col*36;
-let y = 50 + row*40;
+let x =
+canvas.width/2 -
+(row * spacing /2) +
+(col*spacing);
+
+let y = 70 + row*48;
 
 pegs.push({x,y});
 
 }
-
 }
-
-let balls = [];
 
 function drawBoard(){
 
 ctx.clearRect(0,0,canvas.width,canvas.height);
 
-ctx.beginPath();
-ctx.moveTo(20,450);
-ctx.lineTo(200,20);
-ctx.lineTo(380,450);
-ctx.closePath();
-
-ctx.fillStyle = "rgba(40,0,90,.95)";
-ctx.fill();
-
-ctx.strokeStyle = "#00f0ff";
-ctx.lineWidth = 5;
-ctx.shadowBlur = 20;
-ctx.shadowColor = "#00f0ff";
-ctx.stroke();
-
 for(let peg of pegs){
 
 ctx.beginPath();
 ctx.arc(peg.x,peg.y,5,0,Math.PI*2);
-ctx.fillStyle = "white";
-ctx.fill();
-
-}
-
-const slotWidth = 28;
-
-for(let i=0;i<slots.length;i++){
-
-let x = 18 + i*29;
-let y = 420;
-
-ctx.fillStyle = colors[i];
-
-roundRect(x,y,26,26,8,true);
-
-ctx.fillStyle = "white";
-ctx.font = "bold 12px Arial";
-ctx.textAlign = "center";
-ctx.fillText("x"+slots[i],x+13,y+17);
-
-}
-
-}
-
-function roundRect(x,y,w,h,r,fill){
-
-ctx.beginPath();
-ctx.moveTo(x+r,y);
-ctx.lineTo(x+w-r,y);
-ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-ctx.lineTo(x+w,y+h-r);
-ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-ctx.lineTo(x+r,y+h);
-ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-ctx.lineTo(x,y+r);
-ctx.quadraticCurveTo(x,y,x+r,y);
-ctx.closePath();
-
-if(fill) ctx.fill();
-
-}
-
-class Ball{
-
-constructor(){
-
-this.x = 200;
-this.y = 30;
-this.radius = 7;
-
-this.vx = (Math.random()-.5)*2;
-this.vy = 2;
-
-this.active = true;
-
-}
-
-update(){
-
-this.vy += 0.08;
-this.y += this.vy;
-this.x += this.vx;
-
-for(let peg of pegs){
-
-let dx = this.x - peg.x;
-let dy = this.y - peg.y;
-
-let dist = Math.sqrt(dx*dx + dy*dy);
-
-if(dist < this.radius + 5){
-
-this.vx += dx * 0.05;
-this.vy *= -0.2;
-
-}
-
-}
-
-if(this.y > 415){
-
-this.active = false;
-
-let index = Math.floor(this.x / 30);
-
-if(index < 0) index = 0;
-if(index > slots.length-1) index = slots.length-1;
-
-let gain = slots[index];
-
-balance += gain;
-
-moneyText.innerHTML = balance + " HTG";
-
-}
-
-}
-
-draw(){
-
-ctx.beginPath();
-ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
-
-ctx.fillStyle = "yellow";
-ctx.shadowBlur = 20;
-ctx.shadowColor = "yellow";
-
+ctx.fillStyle="white";
+ctx.shadowBlur=10;
+ctx.shadowColor="white";
 ctx.fill();
 
 }
 
 }
-
-function animate(){
 
 drawBoard();
 
-balls.forEach(ball=>{
+const game = document.querySelector(".game");
+const winText = document.getElementById("winText");
 
-ball.update();
-ball.draw();
+function createBall(){
 
-});
+const ball = document.createElement("div");
+ball.className="ball";
 
-balls = balls.filter(ball=>ball.active);
+let x = 188;
+let y = 80;
 
-requestAnimationFrame(animate);
+ball.style.left=x+"px";
+ball.style.top=y+"px";
+
+game.appendChild(ball);
+
+let speedY = 3;
+
+const move = setInterval(()=>{
+
+y += speedY;
+
+x += Math.random()*10 -5;
+
+ball.style.top=y+"px";
+ball.style.left=x+"px";
+
+if(y > 500){
+
+clearInterval(move);
+
+let wins = [
+"0.2$",
+"0.5$",
+"1.0$",
+"2.0$",
+"5.0$",
+"10$"
+];
+
+let randomWin =
+wins[Math.floor(Math.random()*wins.length)];
+
+winText.innerHTML =
+"Win " + randomWin;
+
+ball.remove();
 
 }
 
-animate();
+},20);
 
-playBtn.onclick = ()=>{
+}
 
-balls.push(new Ball());
+document.getElementById("playBtn")
+.addEventListener("click",()=>{
 
-};
+createBall();
 
+});
 </script>
 
 </body>
