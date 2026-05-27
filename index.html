@@ -1,245 +1,440 @@
 <!DOCTYPE html>
-<html lang="ht">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Eroblack Pro Roulette</title>
-    <style>
-        body { margin: 0; background: radial-gradient(circle, #1a1a1a, #000); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; touch-action: none; text-align: center; }
-        
-        #ui-top { text-align: center; margin-bottom: 5px; z-index: 10; }
-        h2 { color: #ff0033; margin: 2px; text-shadow: 0 0 10px #ff0033; font-size: 24px; }
-        
-        #controls { background: rgba(0, 0, 0, 0.6); padding: 12px; border-radius: 15px; border: 1px solid #ff0033; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; width: 85%; max-width: 340px; box-shadow: 0 0 15px rgba(255, 0, 51, 0.3); }
-        
-        .row-inputs { display: flex; justify-content: space-around; width: 100%; gap: 10px; margin-bottom: 8px; }
-        .input-box { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 4px; font-weight: bold; letter-spacing: 0.5px; }
-        
-        input { background: #000; color: #ff0033; border: 2px solid #ff0033; padding: 8px; border-radius: 8px; width: 80%; text-align: center; font-size: 18px; font-weight: bold; }
-        input:focus { outline: none; border-color: #00ffcc; color: #00ffcc; }
-        
-        .miz-buttons-container { display: flex; justify-content: center; gap: 5px; width: 100%; margin-bottom: 8px; }
-        .btn-miz { flex: 1; padding: 8px 2px; background: #222; border: 1px solid #ff0033; color: #ff0033; font-weight: bold; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.2s; }
-        .btn-miz:active { background: #ff0033; color: #000; }
-        
-        #wheel-container { position: relative; margin-top: 5px; }
-        #pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 24px solid #fff; z-index: 10; filter: drop-shadow(0 0 5px #000); }
-        
-        canvas { border: 6px solid #333; border-radius: 50%; box-shadow: 0 0 25px rgba(255, 0, 51, 0.4); }
-        
-        #spin-btn { margin-top: 12px; padding: 12px 45px; font-size: 18px; font-weight: bold; color: white; background: linear-gradient(45deg, #ff0033, #99001a); border: none; border-radius: 50px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 10px rgba(255, 0, 51, 0.4); width: 85%; max-width: 340px; }
-        #spin-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #444; box-shadow: none; }
-        
-        #result-display { margin-top: 5px; font-size: 18px; font-weight: bold; height: 25px; color: #00ffcc; }
-        #dialogue-box { font-size: 13px; color: #ff00ff; font-style: italic; margin: 4px 0; min-height: 18px; font-weight: bold; }
-        #fraz-miz { font-size: 13px; color: #ffff00; font-weight: bold; margin: 4px 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAITI PLINKO PRO</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+min-height:100vh;
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+background:url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop') center/cover;
+}
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+backdrop-filter:blur(5px);
+}
+
+.game{
+position:relative;
+z-index:2;
+width:100%;
+max-width:430px;
+padding:15px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:15px;
+}
+
+.videoBox{
+width:100%;
+height:160px;
+border-radius:20px;
+overflow:hidden;
+border:3px solid #6ff;
+box-shadow:0 0 20px #0ff;
+position:relative;
+background:#111;
+}
+
+.videoBox img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.videoText{
+position:absolute;
+bottom:10px;
+left:0;
+right:0;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+color:yellow;
+text-shadow:0 0 10px #000;
+}
+
+.balance{
+width:250px;
+height:70px;
+border-radius:20px;
+background:#111827;
+border:4px solid #5ff;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:48px;
+font-weight:bold;
+color:white;
+box-shadow:0 0 20px #0ff;
+}
+
+.boardWrap{
+position:relative;
+width:100%;
+display:flex;
+justify-content:center;
+}
+
+canvas{
+background:rgba(25,0,70,.85);
+border-radius:40px;
+box-shadow:
+0 0 25px #00f0ff,
+inset 0 0 20px #0ff;
+}
+
+.flag{
+position:absolute;
+top:130px;
+width:80px;
+height:80px;
+border-radius:50%;
+overflow:hidden;
+border:3px solid #00f0ff;
+box-shadow:0 0 20px #00f0ff;
+}
+
+.flag img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.leftFlag{
+left:-5px;
+}
+
+.rightFlag{
+right:-5px;
+}
+
+.controls{
+width:100%;
+display:flex;
+flex-direction:column;
+gap:15px;
+align-items:center;
+}
+
+button{
+width:270px;
+height:75px;
+border:none;
+border-radius:20px;
+font-size:38px;
+font-weight:bold;
+cursor:pointer;
+transition:.2s;
+color:white;
+}
+
+button:active{
+transform:scale(.95);
+}
+
+.withdraw{
+background:#12005e;
+box-shadow:0 0 20px #4d7cff;
+}
+
+.play{
+background:linear-gradient(180deg,#00ff4c,#008d00);
+box-shadow:0 0 25px #00ff40;
+}
+
+@media(max-width:450px){
+
+.videoBox{
+height:140px;
+}
+
+.balance{
+width:220px;
+font-size:40px;
+}
+
+button{
+width:240px;
+height:70px;
+font-size:34px;
+}
+
+}
+
+</style>
 </head>
 <body>
 
-    <div id="ui-top">
-        <h2>EROBLACK CASINO</h2>
-        <div id="dialogue-box">Kòmandan: "Fè chwa chif ou ak miz ou pou w defye roulèt la!"</div>
-        <div id="result-display"></div>
-    </div>
+<div class="overlay"></div>
 
-    <div id="controls">
-        <div class="row-inputs">
-            <div class="input-box">
-                <label>CHIF (0-31)</label>
-                <input type="number" id="userNumber" min="0" max="31" value="7">
-            </div>
-            <div class="input-box">
-                <label>MIZ (HTG)</label>
-                <input type="number" id="edittextPeye" value="10" oninput="KalkileKòb()">
-            </div>
-        </div>
+<div class="game">
 
-        <div class="miz-buttons-container">
-            <button class="btn-miz" onclick="ChwaziMiz(1)">1 HTG</button>
-            <button class="btn-miz" onclick="ChwaziMiz(5)">5 HTG</button>
-            <button class="btn-miz" onclick="ChwaziMiz(10)">10 HTG</button>
-            <button class="btn-miz" onclick="ChwaziMiz(15)">15 HTG</button>
-            <button class="btn-miz" onclick="ChwaziMiz(25)">25 HTG</button>
-        </div>
-        
-        <!-- Kalkil fraz la chanje sou 25 fwa -->
-        <p id="fraz-miz">Ou mize 10 HTG, siw genyen wap fè 250 HTG!</p>
-    </div>
+<div class="videoBox">
+<img src="https://i.imgur.com/6RL6R3Y.jpeg">
+<div class="videoText">UNIQUEMENT POUR HAÏTI</div>
+</div>
 
-    <div id="wheel-container">
-        <div id="pointer"></div>
-        <canvas id="wheel" width="280" height="280"></canvas>
-    </div>
+<div class="balance" id="money">0 HTG</div>
 
-    <button id="spin-btn" onclick="spinWheel()">Vire Roulèt la</button>
+<div class="boardWrap">
 
-    <input type="text" id="edittextGenyen" value="0" style="display:none;">
+<div class="flag leftFlag">
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Flag_of_Haiti.svg">
+</div>
+
+<canvas id="board" width="400" height="500"></canvas>
+
+<div class="flag rightFlag">
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Flag_of_Haiti.svg">
+</div>
+
+</div>
+
+<div class="controls">
+
+<button class="withdraw">
+RETIRER
+</button>
+
+<button class="play" id="playBtn">
+JOUER
+</button>
+
+</div>
+
+</div>
 
 <script>
-    function sendToApp(bwat, val) {
-        if (window.Android) { 
-            window.Android.voyeKòb(bwat, val.toString()); 
-        }
-        console.log("App -> " + bwat + ": " + val);
-    }
 
-    const canvas = document.getElementById("wheel");
-    const ctx = canvas.getContext("2d");
-    const resultDisplay = document.getElementById("result-display");
-    
-    const sectors = Array.from({length: 32}, (_, i) => i);
-    const colors = sectors.map(i => i % 2 === 0 ? "#ff0033" : "#111");
-    
-    let arc = Math.PI / (sectors.length / 2);
-    let startAngle = 0;
-    let spinTimeout = null;
-    let spinAngleStart = 0;
-    let spinTime = 0;
-    let spinTimeTotal = 0;
-    let mizFinal = 0;
+const canvas = document.getElementById("board");
+const ctx = canvas.getContext("2d");
 
-    const dyalogMiz = [
-        'Kòmandan: "Chwa sa a bèl! Roulèt la pral chofe."',
-        'Kòmandan: "Ou mete bon kòb sou tab la! Ann gade kote l ap tonbe."',
-        'Kòmandan: "Nimewo sa a gen chans, ann croise dwèt nou!"',
-        'Kòmandan: "Chans lan pral pale la! Pare w!"'
-    ];
+const moneyText = document.getElementById("money");
+const playBtn = document.getElementById("playBtn");
 
-    const dyalogVire = [
-        'Kòmandan: "Roulèt la ap vire! Tout je fikse sou li!"',
-        'Kòmandan: "Boul la ap kouri... Kote l ap rale fren l?"'
-    ];
+let balance = 0;
 
-    function BayDyalog(lis) {
-        let n = Math.floor(Math.random() * lis.length);
-        document.getElementById('dialogue-box').innerText = lis[n];
-    }
+const pegs = [];
+const rows = 10;
 
-    function ChwaziMiz(valè) {
-        document.getElementById('edittextPeye').value = valè;
-        KalkileKòb();
-        BayDyalog(dyalogMiz);
-    }
+const slots = [
+5,5,8,20,100,3,500,3,100,20,8,5,5
+];
 
-    // Kalkil la miltipliye pa 25 la la tou
-    function KalkileKòb() {
-        let miz = document.getElementById('edittextPeye').value;
-        if(miz < 0 || miz === "") miz = 0;
-        let potansyel = miz * 25;
-        document.getElementById('fraz-miz').innerText = `Ou mize ${miz} HTG, siw genyen wap fè ${potansyel} HTG!`;
-    }
+const colors = [
+"#ff2d55",
+"#ff2d55",
+"#ff9800",
+"#ffd600",
+"#ff00ff",
+"#ff2d55",
+"#00cfff",
+"#ff2d55",
+"#ff00ff",
+"#ffd600",
+"#ff9800",
+"#ff2d55",
+"#ff2d55"
+];
 
-    function drawWheel() {
-        ctx.clearRect(0, 0, 280, 280);
-        for (let i = 0; i < sectors.length; i++) {
-            let angle = startAngle + i * arc;
-            ctx.fillStyle = colors[i];
-            ctx.beginPath();
-            ctx.arc(140, 140, 130, angle, angle + arc, false);
-            ctx.lineTo(140, 140);
-            ctx.fill();
-            ctx.strokeStyle = "rgba(255,255,255,0.15)";
-            ctx.stroke();
+for(let row=0; row<rows; row++){
 
-            ctx.save();
-            ctx.fillStyle = "white";
-            ctx.translate(140 + Math.cos(angle + arc / 2) * 105, 140 + Math.sin(angle + arc / 2) * 105);
-            ctx.rotate(angle + arc / 2 + Math.PI / 2);
-            ctx.font = 'bold 10px Arial';
-            ctx.fillText(sectors[i], -ctx.measureText(sectors[i]).width / 2, 0);
-            ctx.restore();
-        }
-        
-        ctx.fillStyle = "#222";
-        ctx.beginPath();
-        ctx.arc(140, 140, 32, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "#ff0033";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        
-        ctx.fillStyle = "white";
-        ctx.font = "bold 8px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("EROBLACK", 140, 143);
-    }
+let cols = row + 1;
 
-    function spinWheel() {
-        const userNum = parseInt(document.getElementById("userNumber").value);
-        mizFinal = document.getElementById('edittextPeye').value;
+for(let col=0; col<cols; col++){
 
-        if (isNaN(userNum) || userNum < 0 || userNum > 31) {
-            document.getElementById('dialogue-box').innerText = 'Kòmandan: "Chwazi yon chif ant 0 ak 31 anvan w vire!"';
-            return;
-        }
-        if (mizFinal <= 0 || mizFinal === "") {
-            document.getElementById('dialogue-box').innerText = 'Kòmandan: "Antre yon miz valab sou tab la!"';
-            return;
-        }
+let x = canvas.width/2 - row*18 + col*36;
+let y = 50 + row*40;
 
-        sendToApp("peye", mizFinal);
-        sendToApp("genyen", "0");
+pegs.push({x,y});
 
-        resultDisplay.innerText = "";
-        BayDyalog(dyalogVire);
-        
-        document.getElementById("spin-btn").disabled = true;
-        spinAngleStart = Math.random() * 10 + 10;
-        spinTime = 0;
-        spinTimeTotal = Math.random() * 3 + 4 * 1000;
-        rotateWheel();
-    }
+}
 
-    function rotateWheel() {
-        spinTime += 30;
-        if (spinTime >= spinTimeTotal) {
-            stopRotateWheel();
-            return;
-        }
-        let spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
-        startAngle += (spinAngle * Math.PI / 180);
-        drawWheel();
-        spinTimeout = setTimeout(rotateWheel, 30);
-    }
+}
 
-    function stopRotateWheel() {
-        clearTimeout(spinTimeout);
-        let degrees = startAngle * 180 / Math.PI + 90;
-        let arcd = arc * 180 / Math.PI;
-        let index = Math.floor((360 - degrees % 360) / arcd);
-        let winningNumber = sectors[index];
-        let userNum = parseInt(document.getElementById("userNumber").value);
-        
-        let gain = 0;
+let balls = [];
 
-        if (winningNumber === userNum) {
-            // Kalkil gany lan fèt sou 25 fwa miz la la kounye a
-            gain = mizFinal * 25;
-            resultDisplay.style.color = "#00ffcc";
-            resultDisplay.innerText = "OU GANYEN! SE TE: " + winningNumber;
-            document.getElementById('dialogue-box').innerText = 'Kòmandan: "Magnifik! Jackpot la tonbe! Ou fann roulèt la an de!"';
-        } else {
-            gain = 0;
-            resultDisplay.style.color = "#ff0033";
-            resultDisplay.innerText = "PÈDI! CHIF LA SE TE: " + winningNumber;
-            document.getElementById('dialogue-box').innerText = 'Kòmandan: "Roulèt la pa t an favè nou fwa sa a. Rekòmanse!"';
-        }
+function drawBoard(){
 
-        document.getElementById("edittextGenyen").value = gain;
-        sendToApp("genyen", gain);
+ctx.clearRect(0,0,canvas.width,canvas.height);
 
-        document.getElementById("spin-btn").disabled = false;
-    }
+ctx.beginPath();
+ctx.moveTo(20,450);
+ctx.lineTo(200,20);
+ctx.lineTo(380,450);
+ctx.closePath();
 
-    function easeOut(t, b, c, d) {
-        let ts = (t /= d) * t;
-        let tc = ts * t;
-        return b + c * (tc + -3 * ts + 3 * t);
-    }
+ctx.fillStyle = "rgba(40,0,90,.95)";
+ctx.fill();
 
-    drawWheel();
+ctx.strokeStyle = "#00f0ff";
+ctx.lineWidth = 5;
+ctx.shadowBlur = 20;
+ctx.shadowColor = "#00f0ff";
+ctx.stroke();
+
+for(let peg of pegs){
+
+ctx.beginPath();
+ctx.arc(peg.x,peg.y,5,0,Math.PI*2);
+ctx.fillStyle = "white";
+ctx.fill();
+
+}
+
+const slotWidth = 28;
+
+for(let i=0;i<slots.length;i++){
+
+let x = 18 + i*29;
+let y = 420;
+
+ctx.fillStyle = colors[i];
+
+roundRect(x,y,26,26,8,true);
+
+ctx.fillStyle = "white";
+ctx.font = "bold 12px Arial";
+ctx.textAlign = "center";
+ctx.fillText("x"+slots[i],x+13,y+17);
+
+}
+
+}
+
+function roundRect(x,y,w,h,r,fill){
+
+ctx.beginPath();
+ctx.moveTo(x+r,y);
+ctx.lineTo(x+w-r,y);
+ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+ctx.lineTo(x+w,y+h-r);
+ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+ctx.lineTo(x+r,y+h);
+ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+ctx.lineTo(x,y+r);
+ctx.quadraticCurveTo(x,y,x+r,y);
+ctx.closePath();
+
+if(fill) ctx.fill();
+
+}
+
+class Ball{
+
+constructor(){
+
+this.x = 200;
+this.y = 30;
+this.radius = 7;
+
+this.vx = (Math.random()-.5)*2;
+this.vy = 2;
+
+this.active = true;
+
+}
+
+update(){
+
+this.vy += 0.08;
+this.y += this.vy;
+this.x += this.vx;
+
+for(let peg of pegs){
+
+let dx = this.x - peg.x;
+let dy = this.y - peg.y;
+
+let dist = Math.sqrt(dx*dx + dy*dy);
+
+if(dist < this.radius + 5){
+
+this.vx += dx * 0.05;
+this.vy *= -0.2;
+
+}
+
+}
+
+if(this.y > 415){
+
+this.active = false;
+
+let index = Math.floor(this.x / 30);
+
+if(index < 0) index = 0;
+if(index > slots.length-1) index = slots.length-1;
+
+let gain = slots[index];
+
+balance += gain;
+
+moneyText.innerHTML = balance + " HTG";
+
+}
+
+}
+
+draw(){
+
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+
+ctx.fillStyle = "yellow";
+ctx.shadowBlur = 20;
+ctx.shadowColor = "yellow";
+
+ctx.fill();
+
+}
+
+}
+
+function animate(){
+
+drawBoard();
+
+balls.forEach(ball=>{
+
+ball.update();
+ball.draw();
+
+});
+
+balls = balls.filter(ball=>ball.active);
+
+requestAnimationFrame(animate);
+
+}
+
+animate();
+
+playBtn.onclick = ()=>{
+
+balls.push(new Ball());
+
+};
+
 </script>
+
 </body>
 </html>
