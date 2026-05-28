@@ -2,32 +2,28 @@
 <html lang="ht">
 <head>
     <meta charset="UTF-8">
-    <title>Plinko Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko HTG</title>
     <style>
-        body { background: #0c1630; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: Arial, sans-serif; }
-        .game { width: 390px; height: 750px; background: linear-gradient(#0b1f44, #1b0d35); border-radius: 30px; position: relative; border: 4px solid #333; overflow: hidden; }
-        canvas { display: block; margin: 50px auto 0; }
-        
-        /* Pati anba a */
-        .bottom-ui { position: absolute; bottom: 0; width: 100%; background: #2d1b4e; padding: 20px; text-align: center; }
-        .multipliers { display: flex; justify-content: center; gap: 3px; margin-bottom: 15px; }
-        .m-box { padding: 8px 4px; font-size: 11px; font-weight: bold; border-radius: 4px; color: #000; width: 45px; }
-        .yellow { background: #e6d500; } .green { background: #27d047; } .blue { background: #00bfff; color: white; }
-        
-        .main-bar { display: flex; background: #e6d500; border-radius: 8px; overflow: hidden; margin-bottom: 20px; align-items: center; }
-        .balance-text { flex-grow: 1; font-size: 24px; font-weight: bold; padding: 10px; color: #000; }
-        .retire-btn { background: #27d047; border: none; padding: 15px 20px; font-weight: bold; cursor: pointer; color: white; font-size: 16px; }
-        
-        .play-btn { width: 150px; height: 150px; background: white; border: 10px solid #e6d500; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; font-size: 30px; font-weight: bold; color: #b07b00; cursor: pointer; box-shadow: 0 0 20px #e6d500; }
-        .ball { position: absolute; width: 14px; height: 14px; background: #ff2ea6; border-radius: 50%; z-index: 10; box-shadow: 0 0 10px #ff2ea6; }
+        body { background: #0c1630; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; overflow: hidden; }
+        .game-container { width: 390px; height: 844px; background: linear-gradient(#0b1f44, #1b0d35); position: relative; border-radius: 30px; border: 4px solid #333; }
+        canvas { display: block; margin: 80px auto 0; }
+        .ui-bottom { position: absolute; bottom: 0; width: 100%; padding: 20px; background: rgba(56,0,93,0.9); }
+        .multipliers { display: flex; justify-content: center; gap: 4px; margin-bottom: 15px; }
+        .m-box { width: 45px; padding: 5px 0; text-align: center; font-size: 12px; font-weight: bold; border-radius: 4px; }
+        .yellow { background: #d6d600; } .green { background: #2dbf32; } .blue { background: #00bfff; }
+        .display-bar { background: #d6d600; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        #balanceText { font-size: 24px; font-weight: bold; }
+        .btn-retire { background: #2dbf32; padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .play-btn { width: 120px; height: 120px; background: white; border: 10px solid #d6d600; border-radius: 50%; margin: 0 auto; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: #b07b00; cursor: pointer; box-shadow: 0 0 20px #d6d600; }
+        .ball { position: absolute; width: 14px; height: 14px; background: #ff2ea6; border-radius: 50%; }
     </style>
 </head>
 <body>
 
-<div class="game">
+<div class="game-container">
     <canvas id="board" width="350" height="400"></canvas>
-    
-    <div class="bottom-ui">
+    <div class="ui-bottom">
         <div class="multipliers">
             <div class="m-box yellow">0.00</div>
             <div class="m-box green">0.25</div>
@@ -37,62 +33,71 @@
             <div class="m-box green">0.25</div>
             <div class="m-box yellow">0.00</div>
         </div>
-        
-        <div class="main-bar">
-            <div class="balance-text" id="balance">0.00 HTG</div>
-            <button class="retire-btn" onclick="retire()">RETIRE</button>
+        <div class="display-bar">
+            <div id="balanceText">0.00 HTG</div>
+            <button class="btn-retire" onclick="retire()">RETIRE</button>
         </div>
-        
-        <div class="play-btn" id="playBtn">PLAY</div>
+        <div class="play-btn" onclick="askPlay()">PLAY</div>
     </div>
 </div>
 
 <script>
-    const canvas = document.getElementById("board");
-    const ctx = canvas.getContext("2d");
     let balance = 0.00;
-    
+    const ctx = document.getElementById("board").getContext("2d");
+
     // Desen poto yo
-    for(let i=0; i<10; i++) {
-        for(let j=0; j<=i; j++) {
+    for(let r=0; r<10; r++) {
+        for(let c=0; c<=r; c++) {
             ctx.fillStyle = "white";
             ctx.beginPath();
-            ctx.arc(175 - (i*16) + (j*32), 50 + (i*35), 4, 0, Math.PI*2);
+            ctx.arc(175 - (r*16) + (c*32), 50 + (r*35), 4, 0, Math.PI*2);
             ctx.fill();
         }
     }
 
-    document.getElementById("playBtn").addEventListener("click", () => {
-        // Peye 1 goud pou jwe
-        if(balance < 0) balance = 0;
-        balance -= 1;
-        updateUI();
-        
+    function askPlay() {
+        if(confirm("Èske ou vle peye 1 Goud pou jwe?")) {
+            balance -= 1.00;
+            updateBalance();
+            createBall();
+        }
+    }
+
+    function createBall() {
         const ball = document.createElement("div");
         ball.className = "ball";
-        ball.style.left = "175px"; ball.style.top = "50px";
-        document.querySelector(".game").appendChild(ball);
-        
-        let x = 175, y = 50;
-        let timer = setInterval(() => {
-            y += 5;
-            x += (Math.random() - 0.5) * 10;
-            ball.style.left = x + "px";
-            ball.style.top = y + "px";
-            
-            if(y > 420) {
-                clearInterval(timer);
+        ball.style.left = "175px"; ball.style.top = "80px";
+        document.querySelector(".game-container").appendChild(ball);
+
+        let x = 175, y = 80;
+        let interval = setInterval(() => {
+            y += 5; x += (Math.random() - 0.5) * 10;
+            ball.style.top = y + "px"; ball.style.left = x + "px";
+            if(y > 450) {
+                clearInterval(interval);
                 ball.remove();
-                // Lojik genyen (25.00 a raman sòti - 5%)
-                let win = [0, 0.25, 0.50, 0, 0, 0.25, 0.50, 25.00][Math.floor(Math.random()*8)];
+                let outcomes = [0.25, 0.50, 25.00, 0.50, 0.25];
+                let win = outcomes[Math.floor(Math.random() * outcomes.length)];
                 balance += win;
-                updateUI();
+                updateBalance();
             }
         }, 30);
-    });
+    }
 
-    function updateUI() { document.getElementById("balance").innerText = balance.toFixed(2) + " HTG"; }
-    function retire() { alert("Ou retire " + balance.toFixed(2) + " HTG!"); balance = 0; updateUI(); }
+    function retire() {
+        let amount = prompt("Antre kantite ou vle retire (Max: " + balance.toFixed(2) + "):");
+        if(amount && parseFloat(amount) <= balance) {
+            balance -= parseFloat(amount);
+            updateBalance();
+            alert("Ou retire " + amount + " HTG avèk siksè!");
+        } else {
+            alert("Montan envalid!");
+        }
+    }
+
+    function updateBalance() {
+        document.getElementById("balanceText").innerText = balance.toFixed(2) + " HTG";
+    }
 </script>
 
 </body>
