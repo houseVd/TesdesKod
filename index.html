@@ -1,100 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ht">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Plinky HTG</title>
+    <meta charset="UTF-8">
+    <title>Plinko Game</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
-        body { background:#0c1630; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; }
-        .game { width:390px; height:844px; background:linear-gradient(#0b1f44,#1b0d35); position:relative; border-radius:30px; border:4px solid #222; }
-        .top-title { text-align:center; color:white; font-size:40px; font-weight:bold; padding-top:20px; font-family:cursive; }
-        canvas { position:absolute; top:100px; left:0; }
-        .bottom { position:absolute; bottom:0; left:0; width:100%; background:rgba(56,0,93,.9); padding:20px; border-radius:0 0 25px 25px; }
-        .win-box { background:gold; color:#111; font-size:24px; font-weight:bold; text-align:center; padding:10px; border-radius:6px; margin-bottom:15px; }
-        .play-btn { width:100px; height:100px; border-radius:50%; background:white; border:8px solid gold; display:flex; justify-content:center; align-items:center; margin:10px auto; font-size:24px; font-weight:bold; color:#b07b00; cursor:pointer; }
-        .controls { display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:10px; }
-        input { width:100px; padding:10px; font-size:18px; text-align:center; border-radius:5px; border:none; }
-        button#retireBtn { padding:10px 20px; background:#ff4757; color:white; border:none; border-radius:5px; font-size:18px; cursor:pointer; font-weight:bold; }
-        .ball { position:absolute; width:14px; height:14px; border-radius:50%; background:#ff2ea6; box-shadow:0 0 15px #ff2ea6; z-index:10; }
+        body { background: #0c1630; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: Arial, sans-serif; }
+        .game { width: 390px; height: 750px; background: linear-gradient(#0b1f44, #1b0d35); border-radius: 30px; position: relative; border: 4px solid #333; overflow: hidden; }
+        canvas { display: block; margin: 50px auto 0; }
+        
+        /* Pati anba a */
+        .bottom-ui { position: absolute; bottom: 0; width: 100%; background: #2d1b4e; padding: 20px; text-align: center; }
+        .multipliers { display: flex; justify-content: center; gap: 3px; margin-bottom: 15px; }
+        .m-box { padding: 8px 4px; font-size: 11px; font-weight: bold; border-radius: 4px; color: #000; width: 45px; }
+        .yellow { background: #e6d500; } .green { background: #27d047; } .blue { background: #00bfff; color: white; }
+        
+        .main-bar { display: flex; background: #e6d500; border-radius: 8px; overflow: hidden; margin-bottom: 20px; align-items: center; }
+        .balance-text { flex-grow: 1; font-size: 24px; font-weight: bold; padding: 10px; color: #000; }
+        .retire-btn { background: #27d047; border: none; padding: 15px 20px; font-weight: bold; cursor: pointer; color: white; font-size: 16px; }
+        
+        .play-btn { width: 150px; height: 150px; background: white; border: 10px solid #e6d500; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; font-size: 30px; font-weight: bold; color: #b07b00; cursor: pointer; box-shadow: 0 0 20px #e6d500; }
+        .ball { position: absolute; width: 14px; height: 14px; background: #ff2ea6; border-radius: 50%; z-index: 10; box-shadow: 0 0 10px #ff2ea6; }
     </style>
 </head>
 <body>
 
 <div class="game">
-    <div class="top-title">Plinky HTG</div>
-    <canvas id="board" width="390" height="500"></canvas>
+    <canvas id="board" width="350" height="400"></canvas>
     
-    <div class="bottom">
-        <div class="win-box" id="winText">Balans: 100.00 HTG</div>
-        
-        <div class="controls">
-            <input type="number" id="betAmount" value="1.00" step="1">
-            <div class="play-btn" id="playBtn">PLAY</div>
-            <button id="retireBtn">RETIRE</button>
+    <div class="bottom-ui">
+        <div class="multipliers">
+            <div class="m-box yellow">0.00</div>
+            <div class="m-box green">0.25</div>
+            <div class="m-box green">0.50</div>
+            <div class="m-box blue">25.00</div>
+            <div class="m-box green">0.50</div>
+            <div class="m-box green">0.25</div>
+            <div class="m-box yellow">0.00</div>
         </div>
+        
+        <div class="main-bar">
+            <div class="balance-text" id="balance">0.00 HTG</div>
+            <button class="retire-btn" onclick="retire()">RETIRE</button>
+        </div>
+        
+        <div class="play-btn" id="playBtn">PLAY</div>
     </div>
 </div>
 
 <script>
     const canvas = document.getElementById("board");
     const ctx = canvas.getContext("2d");
-    let balance = 100.00;
+    let balance = 0.00;
     
     // Desen poto yo
-    const pegs = [];
-    for(let r=0; r<10; r++){
-        for(let c=0; c<=r; c++){
-            pegs.push({x: canvas.width/2 - (r*16) + (c*32), y: 70 + r*48});
+    for(let i=0; i<10; i++) {
+        for(let j=0; j<=i; j++) {
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.arc(175 - (i*16) + (j*32), 50 + (i*35), 4, 0, Math.PI*2);
+            ctx.fill();
         }
     }
-    pegs.forEach(p => {
-        ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-        ctx.fillStyle="white"; ctx.fill();
-    });
-
-    const winText = document.getElementById("winText");
-    const betInput = document.getElementById("betAmount");
 
     document.getElementById("playBtn").addEventListener("click", () => {
-        let bet = parseFloat(betInput.value);
-        if(balance < bet) { alert("Pa ase lajan!"); return; }
+        // Peye 1 goud pou jwe
+        if(balance < 0) balance = 0;
+        balance -= 1;
+        updateUI();
         
-        balance -= bet;
-        updateUI("Jwe...");
-        createBall(bet);
-    });
-
-    document.getElementById("retireBtn").addEventListener("click", () => {
-        alert("Ou retire: " + balance.toFixed(2) + " HTG");
-        balance = 0;
-        updateUI("Balans: 0.00 HTG");
-    });
-
-    function updateUI(text) { winText.innerText = text; }
-
-    function createBall(bet) {
         const ball = document.createElement("div");
         ball.className = "ball";
-        let x = 195, y = 80;
-        ball.style.left = x + "px"; ball.style.top = y + "px";
+        ball.style.left = "175px"; ball.style.top = "50px";
         document.querySelector(".game").appendChild(ball);
-
-        let move = setInterval(() => {
-            y += 4; x += (Math.random() - 0.5) * 10;
-            ball.style.top = y + "px"; ball.style.left = x + "px";
-            if(y > 480) {
-                clearInterval(move);
+        
+        let x = 175, y = 50;
+        let timer = setInterval(() => {
+            y += 5;
+            x += (Math.random() - 0.5) * 10;
+            ball.style.left = x + "px";
+            ball.style.top = y + "px";
+            
+            if(y > 420) {
+                clearInterval(timer);
                 ball.remove();
-                // Lojik genyen: ble (5.0x) la difisil anpil (5%)
-                const outcomes = [0.2, 0.5, 1.0, 0.5, 0.2, 0.2, 0.5, 0.2, 5.0];
-                let multiplier = outcomes[Math.floor(Math.random() * outcomes.length)];
-                let won = bet * multiplier;
-                balance += won;
-                winText.innerText = "Ou genyen: " + won.toFixed(2) + " HTG";
+                // Lojik genyen (25.00 a raman sòti - 5%)
+                let win = [0, 0.25, 0.50, 0, 0, 0.25, 0.50, 25.00][Math.floor(Math.random()*8)];
+                balance += win;
+                updateUI();
             }
         }, 30);
-    }
+    });
+
+    function updateUI() { document.getElementById("balance").innerText = balance.toFixed(2) + " HTG"; }
+    function retire() { alert("Ou retire " + balance.toFixed(2) + " HTG!"); balance = 0; updateUI(); }
 </script>
 
 </body>
