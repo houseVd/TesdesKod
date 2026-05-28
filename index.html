@@ -2,55 +2,98 @@
 <html lang="ht">
 <head>
     <meta charset="UTF-8">
-    <title>Mwen Navigatè Pèsonèl</title>
+    <title>E-Bank Pro - Ayiti</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input { width: 70%; padding: 10px; }
-        button { padding: 10px; cursor: pointer; }
-        ul { list-style: none; padding: 0; margin-top: 20px; }
-        li { background: #eee; margin-bottom: 5px; padding: 10px; border-radius: 4px; display: flex; justify-content: space-between; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .card { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1a73e8; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .hidden { display: none; }
+        .balance-box { background: #1a73e8; color: white; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
+        .user-info { margin-bottom: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Rechèch mwen yo</h2>
-    <input type="text" id="searchInput" placeholder="Antre rechèch ou an...">
-    <button onclick="saveSearch()">Sove</button>
+<div id="login-section" class="card">
+    <h2>Konekte nan Kont ou</h2>
+    <input type="text" id="accNumber" placeholder="Nimewo Kont (8 chif)">
+    <input type="password" id="accPass" placeholder="Modpas (4 chif)">
+    <button onclick="login()">Konekte</button>
+</div>
+
+<div id="dashboard" class="card hidden">
+    <h2>E-Bank Dashboard</h2>
+    <div class="user-info" id="user-display"></div>
+    <div class="balance-box">
+        <p>Balans ou</p>
+        <h1 id="balance-display">100 Goud</h1>
+    </div>
     
-    <h3>Istorik mwen:</h3>
-    <ul id="historyList"></ul>
+    <hr>
+    <h3>Voye Lajan</h3>
+    <input type="text" id="targetAcc" placeholder="Nimewo kont destinatè (8 chif)">
+    <input type="number" id="transferAmount" placeholder="Montan">
+    <button onclick="transfer()" style="background: #27ae60;">Voye</button>
+    <button onclick="logout()" style="background: #e74c3c; margin-top:10px;">Dekonekte</button>
 </div>
 
 <script>
-    // Fonksyon pou sove rechèch
-    function saveSearch() {
-        let input = document.getElementById("searchInput");
-        let val = input.value;
-        if (val.trim() !== "") {
-            let searches = JSON.parse(localStorage.getItem("mySearches") || "[]");
-            searches.push(val);
-            localStorage.setItem("mySearches", JSON.stringify(searches));
-            input.value = "";
-            displaySearches();
+    // Lis 10 moun yo (Nimewo 8 chif, Modpas 4 chif)
+    let users = JSON.parse(localStorage.getItem('users')) || [
+        { id: "12345678", name: "Mwen (Itilizatè)", pass: "1234", balance: 100 },
+        { id: "11112222", name: "Jean Pierre", pass: "1111", balance: 100 },
+        { id: "22223333", name: "Marie Noel", pass: "2222", balance: 100 },
+        { id: "33334444", name: "Paul Saint", pass: "3333", balance: 100 },
+        { id: "44445555", name: "Lucia Bel", pass: "4444", balance: 100 },
+        { id: "55556666", name: "Marc Louis", pass: "5555", balance: 100 },
+        { id: "66667777", name: "Rose Anna", pass: "6666", balance: 100 },
+        { id: "77778888", name: "Pierre J", pass: "7777", balance: 100 },
+        { id: "88889999", name: "Katia M", pass: "8888", balance: 100 },
+        { id: "99990000", name: "Dony B", pass: "9999", balance: 100 }
+    ];
+
+    let currentUser = null;
+
+    function login() {
+        let id = document.getElementById('accNumber').value;
+        let pass = document.getElementById('accPass').value;
+        currentUser = users.find(u => u.id === id && u.pass === pass);
+        
+        if (currentUser) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            updateUI();
+        } else {
+            alert("Nimewo kont oswa modpas pa kòrèk!");
         }
     }
 
-    // Fonksyon pou montre rechèch yo
-    function displaySearches() {
-        let list = document.getElementById("historyList");
-        list.innerHTML = "";
-        let searches = JSON.parse(localStorage.getItem("mySearches") || "[]");
-        searches.forEach((item) => {
-            let li = document.createElement("li");
-            li.textContent = item;
-            list.appendChild(li);
-        });
+    function updateUI() {
+        document.getElementById('user-display').innerText = "Bonjou, " + currentUser.name;
+        document.getElementById('balance-display').innerText = currentUser.balance + " Goud";
     }
 
-    // Chaje rechèch yo lè paj la ouvri
-    window.onload = displaySearches;
+    function transfer() {
+        let targetId = document.getElementById('targetAcc').value;
+        let amount = parseInt(document.getElementById('transferAmount').value);
+        let targetUser = users.find(u => u.id === targetId);
+
+        if (targetUser && amount <= currentUser.balance && amount > 0) {
+            currentUser.balance -= amount;
+            targetUser.balance += amount;
+            localStorage.setItem('users', JSON.stringify(users));
+            updateUI();
+            alert("Transfè fèt avèk siksè!");
+        } else {
+            alert("Erè: Tcheke balans ou oswa nimewo kont lan.");
+        }
+    }
+
+    function logout() {
+        location.reload();
+    }
 </script>
 
 </body>
